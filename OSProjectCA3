@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <stdlib.h>
+#include <conio.h>
+
+void fa();
+void fb();
+void fc();
+
+pthread_t t1, t2;
+
+void *f1();
+void *f2();
+sem_t semaphore;
+void main() {
+	sem_init(&semaphore,1,2);
+    pthread_create (&t1, NULL, f1, NULL);
+    pthread_join(t1, NULL);
+    
+    getch();
+}
+
+void *f1() {
+	printf("Thread 1 is Created\n");
+    pthread_create (&t2, NULL, f2, NULL);
+    pthread_join(t2, NULL);
+    
+    
+    printf("Calling Function b()\n");
+    fb();
+    
+}
+
+void *f2() {
+	sleep(1);
+	printf("Thread 2 is Created\n");
+	
+	printf("Calling Function a()\n");
+	fa();	
+			
+	sleep(1);
+	
+	printf("Calling Function c()\n");
+	fc();
+}
+
+void fa() {
+	P(semaphore);
+	printf("Function a() Executed\n\n");
+	V(semaphore);
+}
+
+void fb() {
+	P(semaphore);
+	printf("Function b() is Executed\n\n");
+	V(semaphore);
+}
+
+void fc() {
+	P(semaphore);
+	printf("Function c() is Executed\n\n");
+	V(semaphore);
+}
+
+P (sem_t s) {
+	s = s - 1; 
+    if (s <= 0) {
+    }
+}
+
+V(sem_t s) 
+{ 
+    s = s + 1; 
+    if (s <= 0) { 
+        //wakeup(); 
+    } 
+}
